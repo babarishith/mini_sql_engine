@@ -58,12 +58,18 @@ def process(query):
 	table2 = database.table2
 
 	if len(tab_list) == 1:
-		table = getattr(database, tab_list[0])
-		if len(col_list) == 1:
-			if col_list[0] == "*":
-					print table.data
-		if "(" not in col_list[0]:
-			print table.data[col_list]
+		table = getattr(database, tab_list[0]).data
+		if flag_where == True:
+			if flag_op == "none":
+				table = table.query(" ".join(cond_list[0]))
+			elif flag_op == "and":
+				table = table.query((" ".join(cond_list[0])) + " & " + (" ".join(cond_list[1])))
+			else:
+				table = table.query((" ".join(cond_list[0])) + " | " + (" ".join(cond_list[1])))
+		if len(col_list) == 1 and col_list[0] == "*":
+			print table
+		elif "(" not in col_list[0]:
+			print table[col_list]
 		else:
 			cols = []
 			funcs = []
@@ -79,7 +85,7 @@ def process(query):
 					funcs.append("unique")
 			print "\t".join(col_list)
 			for i in range(len(cols)):
-				print getattr(table.data[cols[i]], funcs[i])(),"\t",
+				print getattr(table[cols[i]], funcs[i])(),"\t",
 			print
 
 
